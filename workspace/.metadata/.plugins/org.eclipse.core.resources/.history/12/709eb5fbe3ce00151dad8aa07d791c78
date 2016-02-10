@@ -1,0 +1,82 @@
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Set;
+import java.util.TreeSet;
+
+public class Combinations {
+    private StringBuilder output = new StringBuilder();
+    private final String inputstring;
+    private static final String outputDirPath = "C:/Users/Vaishali/workspace/DictionaryFolders/wordlist/scraggle_words/";
+	private static final String inputFilePath = "C:/Users/Vaishali/workspace/DictionaryFolders/wordlist/scraggle_wordlist.txt";
+	private static final String fullWordListPath = "C:/Users/Vaishali/workspace/DictionaryFolders/wordlist/wordlist.txt";
+	private static PrintWriter printWriter;
+	private static Set<String> allwords = new TreeSet<String>();
+    
+    public Combinations( final String str ){
+        inputstring = str;
+        System.out.println("The input string  is  : " + inputstring);
+    }
+    
+    private static void loadFullWordList(){
+    	BufferedReader reader;
+		try {
+			reader = new BufferedReader(new FileReader(new File(fullWordListPath)));
+			String word ; 
+	    	while((word = reader.readLine()) != null){
+	    		createWordCombinations(word);
+	    	}
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		catch(IOException ioe){
+			
+		}
+    	
+    }
+    
+    public static void main (String args[])throws Exception
+    {
+    	BufferedReader reader = new BufferedReader(new FileReader(new File(inputFilePath)));
+    	String word ; 
+    	while((word = reader.readLine()) != null){
+    		createWordCombinations(word);
+    	}
+    	reader.close();
+    }
+    
+    private static void createWordCombinations(String word){
+    	try {
+			printWriter = new PrintWriter(new FileWriter(new File(outputDirPath + word)));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	Combinations combobj= new Combinations(word);
+        combobj.combine();
+        printWriter.close();
+    }
+    
+    public void combine() { combine( 0 ); }
+    private void combine(int start ){
+    	try{
+    		for( int i = start; i < inputstring.length(); ++i ){
+                output.append( inputstring.charAt(i) );
+                if ( i < inputstring.length() )
+                combine( i + 1);
+                output.setLength( output.length() - 1 );
+            }
+        	if(output.length() >= 3 ){
+        		printWriter.println(output);
+        	}
+    	}
+    	catch(Exception ioe){
+    		System.out.println(ioe.getMessage());
+    	}
+    }
+} 

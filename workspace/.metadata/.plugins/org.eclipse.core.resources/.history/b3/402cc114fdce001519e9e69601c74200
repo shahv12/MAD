@@ -1,0 +1,102 @@
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.TreeSet;
+
+public class Combinations {
+    private StringBuilder output = new StringBuilder();
+    private final String inputstring;
+    private static final String outputDirPath = "C:/Users/Vaishali/workspace/DictionaryFolders/wordlist/scraggle_words/";
+	private static final String inputFilePath = "C:/Users/Vaishali/workspace/DictionaryFolders/wordlist/scraggle_wordlist.txt";
+	private static final String fullWordListPath = "C:/Users/Vaishali/workspace/DictionaryFolders/wordlist/wordlist.txt";
+	private static final String wordFrequencyStatistics = "C:/Users/Vaishali/workspace/DictionaryFolders/wordlist/wordFrequency.txt";
+	private static PrintWriter printWriter;
+	private static Set<String> allwords = new TreeSet<String>();
+    private static HashMap<String, Integer> max_words = new HashMap<String,Integer>();
+	private static int counter = 0;
+    
+    
+    public Combinations( final String str ){
+        inputstring = str;
+        System.out.println("The input string  is  : " + inputstring);
+    }
+    
+    private static void loadFullWordList(){
+    	BufferedReader reader;
+		try {
+			reader = new BufferedReader(new FileReader(new File(fullWordListPath)));
+			String word ; 
+	    	while((word = reader.readLine()) != null){
+	    		allwords.add(word);
+	    	}
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		catch(IOException ioe){
+			
+		}
+    	
+    }
+    
+    public static void main (String args[])throws Exception
+    {
+    	loadFullWordList();
+    	System.out.println("Full word list loaded into memeory....");
+    	BufferedReader reader = new BufferedReader(new FileReader(new File(inputFilePath)));
+    	String word ; 
+    	while((word = reader.readLine()) != null){
+    		createWordCombinations(word);
+    	}
+    	reader.close();
+    	PrintWriter pw = new PrintWriter(new FileWriter(new File(wordFrequencyStatistics)));
+		Iterator<String> itr = max_words.keySet().iterator();
+		System.out.println("Creating the word list statistics...");
+		while(itr.hasNext()){
+    		word = itr.next();
+    		Integer frequency = max_words.get(word);
+    		pw.println(word + "\t" + frequency); 
+    	}
+    	pw.close();
+    }
+    
+    private static void createWordCombinations(String word){
+    	counter = 0;
+    	try {
+			printWriter = new PrintWriter(new FileWriter(new File(outputDirPath + "_"+ word)));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	Combinations combobj= new Combinations(word);
+        combobj.combine();
+        printWriter.close();
+        max_words.put(word, counter);
+    }
+    
+    public void combine() { combine( 0 ); }
+    private void combine(int start ){
+    	try{
+    		for( int i = start; i < inputstring.length(); ++i ){
+                output.append( inputstring.charAt(i) );
+                if ( i < inputstring.length() )
+                combine( i + 1);
+                output.setLength( output.length() - 1 );
+            }
+        	if(output.length() >= 3 && allwords.contains(output.toString())){
+        		counter ++;
+        		printWriter.println(output);
+        	}
+    	}
+    	catch(Exception ioe){
+    		System.out.println(ioe.getMessage());
+    	}
+    }
+} 
